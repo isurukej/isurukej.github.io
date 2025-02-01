@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonials Slider</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f4f4f4;
+        }
+        
+        .slider-container {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial {
+            display: none;
+            animation: fade 1s ease-in-out;
+        }
+
+        .testimonial.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .buttons {
+            margin-top: 10px;
+        }
+
+        .buttons button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            background: #007BFF;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .buttons button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slider-container">
+        <div class="testimonial active">
+            <p>"This is the best service I have ever used! Highly recommend." - <strong>John Doe</strong></p>
+        </div>
+        <div class="testimonial">
+            <p>"Amazing experience! The team was professional and efficient." - <strong>Jane Smith</strong></p>
+        </div>
+        <div class="testimonial">
+            <p>"Fast, reliable, and affordable. Will use again!" - <strong>Mark Wilson</strong></p>
+        </div>
+
+        <div class="buttons">
+            <button onclick="prevTestimonial()">&#10094; Prev</button>
+            <button onclick="nextTestimonial()">Next &#10095;</button>
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+        const testimonials = document.querySelectorAll('.testimonial');
+
+        function showTestimonial(index) {
+            testimonials.forEach((item, i) => {
+                item.classList.remove('active');
+                if (i === index) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        function nextTestimonial() {
+            currentIndex = (currentIndex + 1) % testimonials.length;
+            showTestimonial(currentIndex);
+        }
+
+        function prevTestimonial() {
+            currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+            showTestimonial(currentIndex);
+        }
+
+        // Auto-slide every 4 seconds
+        setInterval(nextTestimonial, 4000);
+    </script>
+
+</body>
+</html>
