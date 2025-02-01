@@ -3,106 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Testimonials Slider</title>
+    <title>Google Reviews Slider</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background: #f4f4f4;
         }
-        
+
         .slider-container {
-            width: 50%;
+            width: 80%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .testimonial-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .testimonial-card {
+            min-width: 25%;
+            box-sizing: border-box;
             background: white;
             padding: 20px;
+            margin: 10px;
+            text-align: center;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
+        }
+
+        .stars {
+            color: gold;
+            font-size: 20px;
+        }
+
+        .name {
+            font-size: 14px;
+            color: gray;
+        }
+
+        .arrows {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 24px;
+            background: rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .arrows:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .prev {
+            left: -30px;
+        }
+
+        .next {
+            right: -30px;
+        }
+
+        .dots {
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .testimonial {
-            display: none;
-            animation: fade 1s ease-in-out;
-        }
-
-        .testimonial.active {
-            display: block;
-        }
-
-        @keyframes fade {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .buttons {
             margin-top: 10px;
         }
 
-        .buttons button {
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            background: #007BFF;
-            color: white;
+        .dot {
+            height: 10px;
+            width: 10px;
+            margin: 5px;
+            background-color: gray;
+            border-radius: 50%;
+            display: inline-block;
             cursor: pointer;
-            border-radius: 5px;
         }
 
-        .buttons button:hover {
-            background: #0056b3;
+        .dot.active {
+            background-color: black;
+        }
+
+        @media (max-width: 768px) {
+            .testimonial-card {
+                min-width: 50%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .testimonial-card {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="slider-container">
-        <div class="testimonial active">
-            <p>"This is the best service I have ever used! Highly recommend." - <strong>John Doe</strong></p>
+        <div class="testimonial-wrapper" id="testimonialWrapper">
+            <!-- Dynamic Testimonials Will Be Inserted Here -->
         </div>
-        <div class="testimonial">
-            <p>"Amazing experience! The team was professional and efficient." - <strong>Jane Smith</strong></p>
-        </div>
-        <div class="testimonial">
-            <p>"Fast, reliable, and affordable. Will use again!" - <strong>Mark Wilson</strong></p>
-        </div>
-
-        <div class="buttons">
-            <button onclick="prevTestimonial()">&#10094; Prev</button>
-            <button onclick="nextTestimonial()">Next &#10095;</button>
-        </div>
+        
+        <button class="arrows prev" onclick="moveSlide(-1)">&#10094;</button>
+        <button class="arrows next" onclick="moveSlide(1)">&#10095;</button>
     </div>
 
-    <script>
-        let currentIndex = 0;
-        const testimonials = document.querySelectorAll('.testimonial');
+    <div class="dots" id="dotsContainer"></div>
 
-        function showTestimonial(index) {
-            testimonials.forEach((item, i) => {
-                item.classList.remove('active');
-                if (i === index) {
-                    item.classList.add('active');
-                }
+    <script>
+        // Sample Google Ratings Data
+        const googleReviews = [
+            { rating: 5, review: "Fantastic service! Will use again.", name: "John Doe - Business Strategist" },
+            { rating: 4, review: "Very good experience, highly recommend.", name: "Jane Smith - Entrepreneur" },
+            { rating: 5, review: "Exceeded expectations. Support was great!", name: "Mark Wilson - Economist" },
+            { rating: 5, review: "Amazing plugin, very intuitive!", name: "Lisa Brown - Insurance Adjuster" },
+            { rating: 3, review: "Decent, but could improve in some areas.", name: "Tom Hardy - Web Developer" }
+        ];
+
+        const wrapper = document.getElementById("testimonialWrapper");
+        const dotsContainer = document.getElementById("dotsContainer");
+
+        // Function to generate star ratings
+        function generateStars(rating) {
+            let stars = "";
+            for (let i = 0; i < 5; i++) {
+                stars += i < rating ? "★" : "☆";  // Filled star for rating count, empty for the rest
+            }
+            return `<div class="stars">${stars}</div>`;
+        }
+
+        // Function to create testimonials dynamically
+        function loadTestimonials() {
+            wrapper.innerHTML = "";
+            dotsContainer.innerHTML = "";
+
+            googleReviews.forEach((review, index) => {
+                // Create testimonial card
+                const card = document.createElement("div");
+                card.classList.add("testimonial-card");
+                card.innerHTML = `
+                    ${generateStars(review.rating)}
+                    <p>"${review.review}"</p>
+                    <p class="name">${review.name}</p>
+                `;
+                wrapper.appendChild(card);
+
+                // Create dots
+                const dot = document.createElement("span");
+                dot.classList.add("dot");
+                if (index === 0) dot.classList.add("active");
+                dot.addEventListener("click", () => moveToSlide(index));
+                dotsContainer.appendChild(dot);
             });
         }
 
-        function nextTestimonial() {
-            currentIndex = (currentIndex + 1) % testimonials.length;
-            showTestimonial(currentIndex);
+        let index = 0;
+
+        function moveSlide(direction) {
+            index += direction;
+            if (index < 0) index = googleReviews.length - 1;
+            if (index >= googleReviews.length) index = 0;
+            updateSlider();
         }
 
-        function prevTestimonial() {
-            currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
-            showTestimonial(currentIndex);
+        function moveToSlide(i) {
+            index = i;
+            updateSlider();
         }
 
-        // Auto-slide every 4 seconds
-        setInterval(nextTestimonial, 4000);
+        function updateSlider() {
+            wrapper.style.transform = `translateX(-${index * 100}%)`;
+            document.querySelectorAll(".dot").forEach((dot, i) => {
+                dot.classList.toggle("active", i === index);
+            });
+        }
+
+        setInterval(() => moveSlide(1), 5000);
+
+        loadTestimonials(); // Load testimonials on page load
     </script>
 
 </body>
